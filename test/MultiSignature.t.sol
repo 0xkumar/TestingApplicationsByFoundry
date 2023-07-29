@@ -36,14 +36,12 @@ contract testingMultiSig is Test {
         wallet = new MultiSigWallet(addressArray,3);
         hoax(TestAddr, 100 ether);
         payable(address(wallet)).transfer(10 ether);
-        
     }
 
     // function testReveive() public {
 
     //     console.log("Balance of MultiSigWallet is :",address(wallet).balance);
     // }
-
 
     function testOwners() public {
         assertEq(wallet.owners(0), address(1));
@@ -74,7 +72,7 @@ contract testingMultiSig is Test {
 
     function testConfirmTransaction() public {
         vm.startPrank(address(1));
-        wallet.submitTransaction(address(this), 100,"somedata");
+        wallet.submitTransaction(address(this), 100, "somedata");
         //wallet.confirmTransaction(0);
         vm.stopPrank();
 
@@ -102,36 +100,34 @@ contract testingMultiSig is Test {
         console.log("number of confirmations are : ", _numConfirmations);
 
         vm.startPrank(address(5));
-        vm.expectEmit(true,true,false,false);
-        emit ExecuteTransaction(address(5),0);
+        vm.expectEmit(true, true, false, false);
+        emit ExecuteTransaction(address(5), 0);
         wallet.executeTransaction(0);
         vm.stopPrank();
         (,,, bool _executed,) = wallet.transactions(0);
         assertEq(_executed, true);
-        (address to,uint value,bytes memory data, bool executed,uint numConfirmations) = wallet.getTransaction(0);
-        console.log(to,value,executed,numConfirmations);
-     
-
+        (address to, uint256 value, bytes memory data, bool executed, uint256 numConfirmations) =
+            wallet.getTransaction(0);
+        console.log(to, value, executed, numConfirmations);
     }
 
     function testRevokeTransaction() public {
         //vm.deal(address(1),100 ether);
         vm.startPrank(address(1));
-        wallet.submitTransaction(address(100),100,"0x00");
+        wallet.submitTransaction(address(100), 100, "0x00");
 
         wallet.confirmTransaction(0);
-        (,,,,uint _numConfirmations) = wallet.transactions(0);
-        console.log("number of confirmations Before Revoke are :",_numConfirmations);
+        (,,,, uint256 _numConfirmations) = wallet.transactions(0);
+        console.log("number of confirmations Before Revoke are :", _numConfirmations);
 
         wallet.revokeConfirmation(0);
         vm.stopPrank();
 
         (,,,, uint256 numConfirmations) = wallet.transactions(0);
         console.log("Number of confirmations After Revoke are  : ", numConfirmations);
-
-
     }
-    function testTransactionCount() public {
+
+    function testTransactionCount() public view {
         console.log("Total Transactions are : ", wallet.getTransactionCount());
     }
 
@@ -139,7 +135,4 @@ contract testingMultiSig is Test {
     //     (to,value, data,executed,numConfirmations) = wallet.getTransaction(0);
     //     return (to,value,data,executed,numConfirmations);
     // }
-
-
-
 }
