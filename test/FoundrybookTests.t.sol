@@ -3,21 +3,22 @@ pragma solidity ^0.8.17;
 
 import {Test} from "../lib/forge-std/src/Test.sol";
 import {console} from "../lib/forge-std/src/console.sol";
-import "../src/MultiSignatureWallet.sol";
 
 contract MultiSigTest is Test {
     uint256 mainnetFork;
     uint256 optimismFork;
 
+    //vm.createFork() cheatcode is used to create a fork for a mainnet or any other network.abi
+    //vm.selectFork() cheatcode is used to select a fork for the current test.
     function setUp() public {
 
-        mainnetFork = vm.createFork(MAINNET_RPC_URL);
-        optimismFork = vm.createFork(OPTIMISM_RPC_URL);
+        mainnetFork = vm.createFork('https://eth-mainnet.g.alchemy.com/v2/ZQdKORYAIJfSwtXt4pm1S5k5slGjXNki');
+        optimismFork = vm.createFork('https://eth-sepolia.g.alchemy.com/v2/Tqg0mY345xQSJihMD4ar4S11E1GMUhvQ');
     }
 
     function testForkIdDiffer() public {
         assert(mainnetFork != optimismFork);
-        // console.log(MAINNET_RPC_URL);
+        console.log(mainnetFork, optimismFork);
     }
 
     function testCanSelectFork() public {
@@ -27,11 +28,14 @@ contract MultiSigTest is Test {
 
     function testCanSwitchForks() public {
         vm.selectFork(mainnetFork);
+        assertEq(vm.activeFork(), mainnetFork);
+
+        vm.selectFork(optimismFork);
         assertEq(vm.activeFork(), optimismFork);
     }
 
     function testCanCreateAndSelectForkInOneStep() public {
-        uint256 anotherFork = vm.createSelectFork(MAINNET_RPC_URL);
+        uint256 anotherFork = vm.createSelectFork('https://eth-mainnet.g.alchemy.com/v2/ZQdKORYAIJfSwtXt4pm1S5k5slGjXNki');
         assertEq(vm.activeFork(), anotherFork);
     }
 
